@@ -51,11 +51,23 @@ app.post('/api/tasks', function(req, res, next) {
     });
 });
 
+//when someone PUTs to /api/tasks/<task-id>...
+app.put('/api/tasks/:rowid', function(req, res, next) {
+    var sql = 'update tasks set done=? where rowid =?';
+    db.run(sql, [req.body.done, req.params.rowid], function(err) {
+        if (err) {
+            return next(err);
+        }
+
+        res.json(req.body);
+    })
+});
+
 //create new database
 var db = new sqlite.Database(__dirname + '/data/tasks.db', function(err) {
-   if (err) {
+    if (err) {
        throw err;
-   }
+    }
     var sql = 'create table if not exists tasks' +
         '(title string, done int, createdOn datetime)';
     db.run(sql, function(err) {
